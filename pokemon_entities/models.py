@@ -8,3 +8,9 @@ class Pokemon(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+
+class PokemonEntity(models.Model):
+    id = models.AutoField(primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
