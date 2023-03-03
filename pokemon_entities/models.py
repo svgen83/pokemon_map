@@ -3,9 +3,14 @@ from django.db import models  # noqa F401
 # your models here
 class Pokemon(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=200, blank=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    title_en = models.CharField(max_length=200, null=True, blank=True)
+    title_jap = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(upload_to='images', null=True, blank=True)
     description = models.TextField(max_length=2000,default='')
+    previous_evolution = models.ForeignKey('self', null=True,blank=True,
+                                           related_name='next_evolution',
+                                           on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.title}'

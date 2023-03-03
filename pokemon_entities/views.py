@@ -62,7 +62,7 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     try:
-        pokemon = Pokemon.objects.get(id=int(pokemon_id))
+        pokemon = Pokemon.objects.get(id=pokemon_id)
     except Pokemon.DoesNotExist:
         raise Pokemon.DoesNotExist('Покемон не найден')
 
@@ -76,7 +76,17 @@ def show_pokemon(request, pokemon_id):
     pokemon_descr = {
         'img_url': image_url,
         'title_ru': pokemon.title,
-        'description': pokemon.description
+        'title_en': pokemon.title_en,
+        'title_jap': pokemon.title_jap,        
+        'description': pokemon.description,
+        'previous_evolution': {}
+        }
+    
+    if pokemon.previous_evolution:
+        pokemon_descr['previous_evolution'] = {
+            "title_ru": pokemon.previous_evolution.title,
+            "pokemon_id": pokemon.previous_evolution.id,
+            "img_url": pokemon.previous_evolution.image.url,
         }
 
     return render(request, 'pokemon.html', context={
