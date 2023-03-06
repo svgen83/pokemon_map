@@ -68,28 +68,37 @@ def show_pokemon(request, pokemon_id):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
-    pokemon_entity = PokemonEntity.objects.get(pokemon=int(pokemon_id))
-    image_url = request.build_absolute_uri(pokemon_entity.pokemon.image.url)
-    add_pokemon(folium_map, pokemon_entity.latitude,
-                pokemon_entity.longitude, image_url)
+    pokemon_entities = PokemonEntity.objects.get(pokemon=int(pokemon_id))
+    image_url = request.build_absolute_uri(pokemon_entities.pokemon.image.url)
+    add_pokemon(folium_map, pokemon_entities.latitude,
+                pokemon_entities.longitude, image_url)
 
-    pokemon_descr = {
+    pokemon_describes = {
+        'pokemon_id': pokemon.id,
         'img_url': image_url,
         'title_ru': pokemon.title,
         'title_en': pokemon.title_en,
         'title_jap': pokemon.title_jap,        
         'description': pokemon.description,
-        'previous_evolution': {}
+        'previous_evolution': {},
+        'next_evolution': {}
         }
     
     if pokemon.previous_evolution:
-        pokemon_descr['previous_evolution'] = {
-            "title_ru": pokemon.previous_evolution.title,
-            "pokemon_id": pokemon.previous_evolution.id,
-            "img_url": pokemon.previous_evolution.image.url,
+        pokemon_describes['previous_evolution'] = {
+            'title_ru': pokemon.previous_evolution.title,
+            'pokemon_id': pokemon.previous_evolution.id,
+            'img_url': pokemon.previous_evolution.image.url,
+        }
+  
+    if pokemon.next_evolutions.first():
+        pokemon_describes['next_evolution'] = {
+            'pokemon_id': pokemon.next_evolutions.first().id,
+            'title_ru': pokemon.next_evolutions.first().title,
+            'img_url': pokemon.next_evolutions.first().image.url,
         }
 
     return render(request, 'pokemon.html', context={
                       'map': folium_map._repr_html_(),
-                      'pokemon': pokemon_descr}
+                      'pokemon': pokemon_describes}
                   )
