@@ -27,20 +27,20 @@ class Pokemon(models.Model):
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon, verbose_name='покемон',
-                                on_delete=models.CASCADE)
+                                on_delete=models.PROTECT)
     latitude = models.FloatField(null=True, blank=True,
                                  verbose_name='широта')
     longitude = models.FloatField(null=True, blank=True,
                                   verbose_name='долгота')
     appeared_at = models.DateTimeField(null=True, blank=True,
                                        verbose_name='время появления')
-    disappeared_at = models.DateTimeField(null=True, blank=True,
+    disappeared_at = models.DateTimeField(default=None, null=True, blank=True,
                                           verbose_name='время исчезновения')
-    level = models.IntegerField(default=0, verbose_name='уровень')
-    health = models.IntegerField(default=0, verbose_name='здоровье')
-    strength = models.IntegerField(default=0, verbose_name='сила')
-    defence = models.IntegerField(default=0, verbose_name='сопротивление')
-    stamina = models.IntegerField(default=0, verbose_name='выносливость')
+    level = models.IntegerField(default=None, verbose_name='уровень')
+    health = models.IntegerField(default=None, verbose_name='здоровье')
+    strength = models.IntegerField(default=None, verbose_name='сила')
+    defence = models.IntegerField(default=None, verbose_name='сопротивление')
+    stamina = models.IntegerField(default=None, verbose_name='выносливость')
 
     def __str__(self):
         return self.pokemon.title
