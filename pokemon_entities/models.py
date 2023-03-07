@@ -13,8 +13,7 @@ class Pokemon(models.Model):
                                  null=True, blank=True)
     image = models.ImageField(upload_to='images',
                               verbose_name='изображение')
-    description = models.TextField(max_length=2000,
-                                   verbose_name='описание',
+    description = models.TextField(verbose_name='описание',
                                    blank=True, default='')
     previous_evolution = models.ForeignKey(
         'self', null=True, blank=True,
@@ -23,7 +22,7 @@ class Pokemon(models.Model):
         on_delete=models.SET_NULL)
 
     def __str__(self):
-        return f'{self.title}'
+        return self.title
 
 
 class PokemonEntity(models.Model):
@@ -42,3 +41,6 @@ class PokemonEntity(models.Model):
     strength = models.IntegerField(default=0, verbose_name='сила')
     defence = models.IntegerField(default=0, verbose_name='сопротивление')
     stamina = models.IntegerField(default=0, verbose_name='выносливость')
+
+    def __str__(self):
+        return self.pokemon.title
