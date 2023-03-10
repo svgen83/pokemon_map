@@ -62,15 +62,11 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     pokemon = get_object_or_404(Pokemon, id=pokemon_id)
+    image_url = request.build_absolute_uri(pokemon.image.url)
+    next_evolution = pokemon.next_evolutions.first()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-
-    pokemon_entities = PokemonEntity.objects.get(pokemon=int(pokemon_id))
-    image_url = request.build_absolute_uri(pokemon_entities.pokemon.image.url)
-    add_pokemon(folium_map, pokemon_entities.latitude,
-                pokemon_entities.longitude, image_url)
-
-    pokemon_describes = {
+    pokemon_serialized = {
         'pokemon_id': pokemon.id,
         'img_url': image_url,
         'title_ru': pokemon.title,
@@ -81,21 +77,24 @@ def show_pokemon(request, pokemon_id):
         'next_evolution': {}
         }
 
+    for pokemon_entity in pokemon.pokemon_entities.filter(pokemon=pokemon_id):
+        add_pokemon(folium_map, pokemon_entity.latitude,
+                    pokemon_entity.longitude, image_url)
+
     if pokemon.previous_evolution:
-        pokemon_describes['previous_evolution'] = {
+        pokemon_serialized['previous_evolution'] = {
             'title_ru': pokemon.previous_evolution.title,
             'pokemon_id': pokemon.previous_evolution.id,
-            'img_url': pokemon.previous_evolution.image.url,
-        }
+            'img_url': pokemon.previous_evolution.image.url
+            }
 
-    if pokemon.next_evolutions.first():
-        pokemon_describes['next_evolution'] = {
-            'pokemon_id': pokemon.next_evolutions.first().id,
-            'title_ru': pokemon.next_evolutions.first().title,
-            'img_url': pokemon.next_evolutions.first().image.url,
-        }
+    if next_evolution:
+        pokemon_serialized['next_evolution'] = {
+            'pokemon_id': next_evolution.id,
+            'title_ru': next_evolution.title,
+            'img_url': next_evolution.image.url
+            }
 
     return render(request, 'pokemon.html', context={
                       'map': folium_map._repr_html_(),
-                      'pokemon': pokemon_describes}
-                  )
+                      'pokemon': pokemon_serialized})
